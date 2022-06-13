@@ -25,6 +25,8 @@ import com.crapi.model.*;
 import com.crapi.repository.ProfileVideoRepository;
 import com.crapi.repository.UserDetailsRepository;
 import com.crapi.service.UserService;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,6 +43,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -48,6 +52,7 @@ import java.util.Optional;
 public class ProfileServiceImplTest {
 
     @InjectMocks
+    @Spy
     private ProfileServiceImpl profileService;
 
     @Mock
@@ -57,42 +62,49 @@ public class ProfileServiceImplTest {
     @Mock
     private UserDetailsRepository userDetailsRepository;
 
+    @Before
+	public void setUp() {
+		ReflectionTestUtils.setField(profileService, "uploadPath", "/uploads");
+	}
+
     @Test
     @DisplayName("uploadProfilePictureSuccessFullWithSetPictureCalledAndUserDetailsNotNull")
-    public void uploadProfilePictureSuccessFull() {
-        String expectedProfilePictureContent = "Sample text";
+    public void uploadProfilePictureSuccessFull() throws IOException {
+        String expectedProfilePicture = "/uploads/5658ffccee7f0ebfda2b226238b1eb6e.txt";
         MockMultipartFile multipartFile = new MockMultipartFile("sample", "sample.txt",
-                MediaType.TEXT_PLAIN_VALUE, expectedProfilePictureContent.getBytes());
+                MediaType.TEXT_PLAIN_VALUE, expectedProfilePicture.getBytes());
         User user = getDummyUser();
         UserDetails userDetails = getDummyUserDetails();
         Mockito.when(userService.getUserFromToken(Mockito.any()))
                 .thenReturn(user);
         Mockito.when(userDetailsRepository.findByUser_id(Mockito.anyLong()))
                 .thenReturn(userDetails);
+        Mockito.doReturn((long)0).when(profileService).copyFile(Mockito.any(), Mockito.any());
         Mockito.doReturn(userDetails).when(userDetailsRepository).save(Mockito.any());
         UserDetails actualUserDetails = profileService.uploadProfilePicture(multipartFile, getMockHttpRequest());
-        String actualProfilePictureContent = new String(actualUserDetails.getPicture(), StandardCharsets.UTF_8);
+        String actualProfilePicture = actualUserDetails.getPicture();
         Mockito.verify(userDetailsRepository, Mockito.times(1)).save(Mockito.any());
-        Assertions.assertEquals(expectedProfilePictureContent, actualProfilePictureContent);
+        Assertions.assertEquals(expectedProfilePicture, actualProfilePicture);
     }
 
     @Test
     @DisplayName("uploadProfilePictureUserDetailsNull")
-    public void uploadProfilePictureWithUserDetailsNull() {
-        String expectedProfilePictureContent = "Sample text";
+    public void uploadProfilePictureWithUserDetailsNull() throws IOException {
+        String expectedProfilePicture = "/uploads/5658ffccee7f0ebfda2b226238b1eb6e.txt";
         MockMultipartFile multipartFile = new MockMultipartFile("sample", "sample.txt",
-                MediaType.TEXT_PLAIN_VALUE, expectedProfilePictureContent.getBytes());
+                MediaType.TEXT_PLAIN_VALUE, expectedProfilePicture.getBytes());
         UserDetails userDetails = getDummyUserDetails();
         User user = getDummyUser();
         Mockito.when(userService.getUserFromToken(Mockito.any()))
                 .thenReturn(user);
         Mockito.when(userDetailsRepository.findByUser_id(Mockito.anyLong()))
                 .thenReturn(null);
+        Mockito.doReturn((long)0).when(profileService).copyFile(Mockito.any(), Mockito.any());
         Mockito.doReturn(userDetails).when(userDetailsRepository).save(Mockito.any());
         UserDetails actualUserDetails = profileService.uploadProfilePicture(multipartFile, getMockHttpRequest());
         Mockito.verify(userDetailsRepository, Mockito.times(1)).save(Mockito.any());
-        String actualProfilePictureContent = new String(actualUserDetails.getPicture(), StandardCharsets.UTF_8);
-        Assertions.assertEquals(expectedProfilePictureContent, actualProfilePictureContent);
+        String actualProfilePicture = actualUserDetails.getPicture();
+        Assertions.assertEquals(expectedProfilePicture, actualProfilePicture);
         Assertions.assertEquals(100.0, actualUserDetails.getAvailable_credit());
     }
 
@@ -368,7 +380,7 @@ public class ProfileServiceImplTest {
         userDetails.setUser(getDummyUser());
         userDetails.setAvailable_credit(200.89);
         userDetails.setName("User1 Details");
-        userDetails.setPicture(new byte[]{0, 1, 0});
+        userDetails.setPicture("User1 picture");
         return userDetails;
     }
 

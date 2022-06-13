@@ -282,7 +282,7 @@ public class VehicleServiceImplTest {
         userDetails.setUser(getDummyUser());
         userDetails.setAvailable_credit(200.89);
         userDetails.setName("User1 Details");
-        userDetails.setPicture(new byte[]{0, 1, 0});
+        userDetails.setPicture("User1 picture");
         return userDetails;
     }
 
