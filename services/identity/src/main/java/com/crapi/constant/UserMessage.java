@@ -46,6 +46,8 @@ public class UserMessage {
     public static final String TOKEN_VERIFICATION_MISSING = "Missing data. Field is null: ";
     public static final String DID_NOT_GET_VEHICLE_FOR_USER = "Sorry we didn't get vehicle for user: ";
     public static final String PROFILE_PICTURE_UPDATE = "Profile picture updated successfully.";
+    public static final String FILENAME_INVALID = "Filename shouldn't contain ..";
+    public static final String FILESIZE_TOO_LARGE = "File size should be less than 30kB";
     public static final String VIDEO_DELETED_SUCCESS_MESSAGE = "User video deleted successfully.";
     public static final String YOU_HAVE_VIDEO_UPLOADED = "You have already uploaded a video. Please try with change video";
 

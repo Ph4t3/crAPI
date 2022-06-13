@@ -39,9 +39,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import java.util.Map;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -63,6 +68,36 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${app.service.name}")
     private String serviceName;
 
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    private String hashFileName(String secret, String originalFilename) {
+        // String[] fileFrags = originalFilename.split("\\.");
+        // String extension = fileFrags[fileFrags.length-1];
+
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        byte[] hash = md.digest(secret.getBytes(StandardCharsets.UTF_8));
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hash) {
+            sb.append(String.format("%02x", b));
+        }
+
+        String result = sb.toString() + ".jpeg";
+        return result;
+    }
+
+    protected long copyFile(MultipartFile file, String filename) throws IOException {
+        Path root = Paths.get(uploadPath);
+        return Files.copy(file.getInputStream(), root.resolve(filename),  StandardCopyOption.REPLACE_EXISTING);
+    }
+
     /**
      * @param file profile image
      * @param request getting jwt token for user from request header
@@ -76,14 +111,23 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             user = userService.getUserFromToken(request);
             userDetails = userDetailsRepository.findByUser_id(user.getId());
-            if (userDetails!=null && ProfileValidator.validateFile(file) != null) {
-                userDetails.setPicture(file.getBytes());
-            }else{
+
+            if(userDetails == null) {
                 userDetails = new UserDetails();
                 userDetails.setAvailable_credit(100.0);
-                userDetails.setPicture(file.getBytes());
                 userDetails.setUser(user);
             }
+
+            if (ProfileValidator.validateFile(file) == null) {
+                throw new CRAPIExceptionHandler(UserMessage.FILENAME_INVALID,400);
+            } else if (Math.round(file.getSize()/1024) > 30) {
+                throw new CRAPIExceptionHandler(UserMessage.FILESIZE_TOO_LARGE,400);
+            }
+
+            String filename = hashFileName(user.getEmail(), file.getOriginalFilename());
+            copyFile(file, filename);
+
+            userDetails.setPicture(uploadPath + '/' + filename);
             userDetailsRepository.save(userDetails);
             return userDetails;
         }catch (IOException exception){
@@ -217,7 +261,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (scheme == null) {
             scheme = request.getScheme();
         }
-        logger.debug("Convert video {}, host: {}, xForwardedHost: {}, scheme: {}", 
+        logger.debug("Convert video {}, host: {}, xForwardedHost: {}, scheme: {}",
                                                 videoId, host, xForwardedHost, scheme);
         try {
             if (xForwardedHost == null) {

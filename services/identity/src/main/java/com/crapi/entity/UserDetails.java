@@ -14,11 +14,7 @@
 
 package com.crapi.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
-import java.util.Base64;
 
 
 @Entity
@@ -31,10 +27,9 @@ public class UserDetails {
     private long id;
     private String name;
     private String status;
+    private String picture;
     private double available_credit;
-    @Lob
-    private byte[] picture;
-    
+
     @OneToOne
     private User user;
 
@@ -70,12 +65,11 @@ public class UserDetails {
         this.available_credit = available_credit;
     }
 
-    @JsonIgnore
-    public byte[] getPicture() {
+    public String getPicture() {
         return picture;
     }
 
-    public void setPicture(byte[] picture) {
+    public void setPicture(String picture) {
         this.picture = picture;
     }
 
@@ -85,11 +79,5 @@ public class UserDetails {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    @JsonProperty("picture")
-    public String getPhotoBase64() {
-        // just assuming it is a jpeg. you would need to cater for different media types
-        return "data:image/jpeg;base64," + new String(Base64.getEncoder().encode(picture));
     }
 }

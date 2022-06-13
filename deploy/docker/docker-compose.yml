@@ -37,6 +37,7 @@ services:
       - SMTP_FROM=no-reply@example.com
       - SMTP_AUTH=true
       - SMTP_STARTTLS=true
+      - UPLOAD_PATH=/uploads
     depends_on:
       postgresdb:
         condition: service_healthy
@@ -47,6 +48,8 @@ services:
         interval: 15s
         timeout: 15s
         retries: 15
+    volumes:
+      - profile-pictures:/uploads
     deploy:
       resources:
         limits:
@@ -149,6 +152,8 @@ services:
         interval: 15s
         timeout: 15s
         retries: 15
+    volumes:
+      - profile-pictures:/data/uploads
     deploy:
       resources:
         limits:
@@ -223,3 +228,4 @@ services:
 volumes:
   mongodb-data:
   postgresql-data:
+  profile-pictures:

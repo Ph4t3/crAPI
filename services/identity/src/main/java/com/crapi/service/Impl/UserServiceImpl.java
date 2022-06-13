@@ -214,7 +214,7 @@ public class UserServiceImpl implements UserService {
                     user.getEmail(), user.getNumber(),user.getRole().toString(),
                     userDetails!=null?userDetails.getAvailable_credit():0.0);
             if (userDetails!=null &&userDetails.getPicture()!=null )
-                dashboardResponse.setPicture_url(userDetails.getPhotoBase64());
+                dashboardResponse.setPicture_url(userDetails.getPicture());
             if (profileVideo!=null && profileVideo.getVideo()!=null) {
                 dashboardResponse.setVideo_name(profileVideo.getVideo_name());
                 dashboardResponse.setVideo_url(profileVideo.getVideoBase64());

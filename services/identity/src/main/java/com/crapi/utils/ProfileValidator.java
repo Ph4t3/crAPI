@@ -62,12 +62,14 @@ public class ProfileValidator {
             // Check if the file's name contains invalid characters
             if(fileName.contains("..")) {
                 logger.info("Sorry! Filename contains invalid path sequence " + fileName);
+                return null;
             }
+
             return file.getBytes();
         }catch (Exception e){
             logger.error("unable to upload video -> Message: %d ", e);
+            return null;
         }
-        return null;
     }
 }
 
