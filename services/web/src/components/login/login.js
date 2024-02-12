@@ -74,13 +74,15 @@ const Login = (props) => {
             <Button type="primary" htmlType="submit" className="form-button">
               Login
             </Button>
-            // <button
-            //   className="alternative-style"
-            //   onClick={() => history.push("/signup")}
-            //   type="button"
-            // >
-            //   Dont have an Account? SignUp
-            // </button>
+            {/*
+            <button
+              className="alternative-style"
+              onClick={() => history.push("/signup")}
+              type="button"
+            >
+              Dont have an Account? SignUp
+            </button>
+            */}
           </Form.Item>
         </Form>
       </Card>
