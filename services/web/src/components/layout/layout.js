@@ -23,7 +23,7 @@ import PropTypes from "prop-types";
 import { Layout, Spin } from "antd";
 import { connect } from "react-redux";
 import LoginContainer from "../../containers/login/login";
-import SignupContainer from "../../containers/signup/signup";
+// import SignupContainer from "../../containers/signup/signup";
 import NavBar from "../navBar/navBar";
 import ForgotPassword from "../forgotPassword/forgotPassword";
 import ResetPasswordContainer from "../../containers/resetPassword/resetPassword";
@@ -181,11 +181,13 @@ const StyledComp = connect(
               component={LoginContainer}
               isLoggedIn={props.isLoggedIn}
             />
+            {/*
             <BeforeLogin
               path="/signup"
               component={SignupContainer}
               isLoggedIn={props.isLoggedIn}
             />
+            */}
             <BeforeLogin
               path="/forgot-password"
               component={ForgotPassword}
