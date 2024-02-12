@@ -356,7 +356,7 @@ export function* getServices(param) {
 
 export function* userActionWatcher() {
   yield takeLatest(actionTypes.LOG_IN, logIn);
-  yield takeLatest(actionTypes.SIGN_UP, signUp);
+  // yield takeLatest(actionTypes.SIGN_UP, signUp);
   yield takeLatest(actionTypes.VERIFY_OTP, verifyOTP);
   yield takeLatest(actionTypes.FORGOT_PASSWORD, forgotPassword);
   yield takeLatest(actionTypes.RESET_PASSWORD, resetPassword);
