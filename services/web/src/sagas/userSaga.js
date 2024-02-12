@@ -91,34 +91,34 @@ export function* logIn(param) {
  * password: user password,
  * callback : callback method
  */
-export function* signUp(param) {
-  const { name, email, number, password, callback } = param;
-  let recievedResponse = {};
-  try {
-    yield put({ type: actionTypes.FETCHING_DATA });
-
-    const postUrl = APIService.JAVA_MICRO_SERVICES + requestURLS.SIGNUP;
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    const responseJSON = yield fetch(postUrl, {
-      headers,
-      method: "POST",
-      body: JSON.stringify({ name, email, number, password }),
-    }).then((response) => {
-      recievedResponse = response;
-      if (recievedResponse.ok) return response;
-      return response.json();
-    });
-
-    yield put({ type: actionTypes.FETCHED_DATA, payload: recievedResponse });
-    if (recievedResponse.ok) callback(responseTypes.SUCCESS, SIGN_UP_SUCCESS);
-    else callback(responseTypes.FAILURE, responseJSON.message);
-  } catch (e) {
-    yield put({ type: actionTypes.FETCHED_DATA, payload: recievedResponse });
-    callback(responseTypes.FAILURE, SIGN_UP_FAILED);
-  }
-}
+// export function* signUp(param) {
+//   const { name, email, number, password, callback } = param;
+//   let recievedResponse = {};
+//   try {
+//     yield put({ type: actionTypes.FETCHING_DATA });
+//
+//     const postUrl = APIService.JAVA_MICRO_SERVICES + requestURLS.SIGNUP;
+//     const headers = {
+//       "Content-Type": "application/json",
+//     };
+//     const responseJSON = yield fetch(postUrl, {
+//       headers,
+//       method: "POST",
+//       body: JSON.stringify({ name, email, number, password }),
+//     }).then((response) => {
+//       recievedResponse = response;
+//       if (recievedResponse.ok) return response;
+//       return response.json();
+//     });
+//
+//     yield put({ type: actionTypes.FETCHED_DATA, payload: recievedResponse });
+//     if (recievedResponse.ok) callback(responseTypes.SUCCESS, SIGN_UP_SUCCESS);
+//     else callback(responseTypes.FAILURE, responseJSON.message);
+//   } catch (e) {
+//     yield put({ type: actionTypes.FETCHED_DATA, payload: recievedResponse });
+//     callback(responseTypes.FAILURE, SIGN_UP_FAILED);
+//   }
+// }
 
 /**
  * send OTP for forgot password
